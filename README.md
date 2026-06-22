@@ -1,61 +1,147 @@
-[Gitlab Scraper](https://apify.com/nexgendata/gitlab-scraper?fpr=data)
+[Gitlab Scraper](https://apify.com/klondikeking/gitlab-scraper?fpr=data)
 
-# GitLab Repository Scraper by nexgendata
-
-Extract GitLab repository data including star counts, fork counts, open issues, merge request activity, programming languages, contributor lists, and last commit timestamps at scale. Built for enterprise DevOps teams monitoring internal project health and anyone who needs structured developer tools data without the overhead of building a custom scraper.
+Extract comprehensive project, user, and group data from GitLab with enterprise-grade reliability. Perfect for DevOps intelligence, competitive analysis, open source research, and marketplace monitoring.
 
 ## What This Actor Does
 
-The GitLab Repository Scraper connects to GitLab and extracts GitLab repository data including star counts, fork counts, open issues, merge request activity, programming languages, contributor lists, and last commit timestamps. It handles pagination, rate limiting, and data normalization automatically so you get clean, structured JSON output ready for your database, dashboard, or analytics pipeline. No API keys to manage, no infrastructure to maintain.
+GitLab Scraper extracts detailed metadata from GitLab projects, including stars, forks, issues, merge requests, README content, topics, and contributor information. Unlike basic scrapers, it uses GitLab's official REST API for maximum reliability and data completeness.
 
-## Who Uses This
+### Key Features
 
-Enterprise devops teams monitoring internal project health, open source analysts tracking gitlab-hosted projects, investors evaluating companies using gitlab, and developer advocates measuring community engagement. If you need developer tools data at scale without building and maintaining your own extraction pipeline, this actor handles the heavy lifting.
-
-## What You Get Back
-
-Each run produces a structured dataset in JSON format. Every record includes all available fields from the source, normalized into a consistent schema. The data is immediately available for export in JSON, CSV, or Excel format, or you can push it directly to your data warehouse via Apify integrations with Google Sheets, Slack, Webhooks, and 50+ other platforms.
-
-## How It Compares
-
-GitLab API requires personal access tokens with rate limits of 300 requests/minute. No bulk search or analytics endpoints exist for cross-repository analysis. This actor delivers the same data at $3 per 1,000 repos with zero monthly commitment, no API key management, and results available in seconds. Pay only for what you use.
-
-## Sample Output
-
-```
-{
-  "source": "gitlab-scraper",
-  "data": "Structured developer tools data fields",
-  "timestamp": "2024-03-29T12:00:00Z",
-  "url": "https://example.com/source"
-}
-```
+- **Project Search**: Find projects by keywords across all of GitLab
+- **User Profile Scraping**: Extract all projects from specific users
+- **Group Intelligence**: Scrape complete project listings from groups/organizations
+- **Deep Metadata**: Stars, forks, issues, merge requests, topics, and more
+- **README Extraction**: Optionally fetch README content for analysis
+- **Pagination Support**: Handle large result sets automatically
+- **Rate Limit Resilience**: Built-in retry logic and respectful API usage
 
 ## Use Cases
 
-Teams use the GitLab Repository Scraper across a range of workflows. Analysts feed the output into business intelligence dashboards for real-time monitoring. Developers integrate it into automated data pipelines that run on daily or weekly schedules. Researchers use bulk exports for large-scale analysis projects. Marketing teams track competitive movements and industry trends. The structured output format means the data slots into virtually any downstream system with minimal transformation.
+### 1. DevOps Intelligence
 
-## Pricing: $3 per 1,000 Repos
+Monitor popular container images, CI/CD configurations, and DevOps tooling trends. Track which projects are gaining traction in the developer community and identify emerging technologies before they become mainstream.
 
-At $3/1K, processing 5,000 repos costs $15.00 total. A daily pipeline pulling 500 repos runs $1.50/day ($45/month). Compare that to building and maintaining your own scraping infrastructure, which typically costs $500-2,000/month in proxy fees, compute, and engineering time alone.
+### 2. Competitive Analysis
+
+Analyze competitor open source strategies by tracking their GitLab presence. Monitor their most popular projects, development velocity, and community engagement metrics.
+
+### 3. Open Source Research
+
+Academic researchers and analysts can study open source trends, technology adoption patterns, and collaborative development practices across the GitLab ecosystem.
+
+### 4. Talent Sourcing
+
+Identify active developers and high-quality projects for recruitment purposes. Filter by programming language, activity level, and community engagement.
+
+### 5. Marketplace Monitoring
+
+Track plugin and extension ecosystems hosted on GitLab. Monitor version updates, community feedback, and adoption metrics.
+
+## Input Parameters
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `searchQueries` | string[] | No | Search terms to find projects (e.g., "machine learning", "react") |
+| `projectPaths` | string[] | No | Specific project paths like "gitlab-org/gitlab" |
+| `userNames` | string[] | No | GitLab usernames to extract projects from |
+| `groupPaths` | string[] | No | GitLab groups to extract all projects from |
+| `maxResults` | integer | Yes | Maximum projects to extract (1-1000) |
+| `includeDetails` | boolean | No | Fetch README content and merge request counts |
+| `proxyConfiguration` | object | No | Proxy settings (uses Apify Proxy by default) |
+
+### Example Input
+
+```
+{
+  "searchQueries": ["machine learning", "docker"],
+  "userNames": ["gitlab-org"],
+  "maxResults": 50,
+  "includeDetails": true
+}
+```
+
+## Output Schema
+
+Each extracted project includes:
+
+```
+{
+  "id": 12345,
+  "name": "example-project",
+  "path": "example-project",
+  "pathWithNamespace": "user/example-project",
+  "description": "A sample project description",
+  "webUrl": "https://gitlab.com/user/example-project",
+  "starsCount": 150,
+  "forksCount": 45,
+  "openIssuesCount": 12,
+  "mergeRequestsCount": 3,
+  "defaultBranch": "main",
+  "visibility": "public",
+  "archived": false,
+  "createdAt": "2023-01-15T10:30:00Z",
+  "lastActivityAt": "2024-01-20T14:22:00Z",
+  "language": "Python",
+  "topics": ["machine-learning", "data-science"],
+  "tagList": ["v1.0", "stable"],
+  "readmeContent": "# Example Project\\n\\nThis is the README...",
+  "owner": {
+    "id": 67890,
+    "username": "user",
+    "name": "User Name",
+    "webUrl": "https://gitlab.com/user"
+  },
+  "containerRegistryEnabled": true,
+  "issuesEnabled": true,
+  "mergeRequestsEnabled": true,
+  "wikiEnabled": true
+}
+```
+
+## Pricing
+
+This Actor uses **Pay Per Event** pricing:
+
+- **$0.001 per project extracted**
+
+Example costs:
+
+- 100 projects = $0.10
+- 1,000 projects = $1.00
+- 10,000 projects = $10.00
+
+No monthly fees, no minimums. Pay only for what you use.
+
+## Rate Limits & Performance
+
+- GitLab API rate limits: 10 requests/second for unauthenticated requests
+- This Actor respects rate limits with automatic backoff
+- Average extraction speed: ~30-60 projects/minute with details enabled
+- Recommended maxResults: 50-100 for initial testing
 
 ## FAQ
 
-**How often can I run this?**
-As often as you need. Schedule runs hourly, daily, or weekly through Apify's built-in scheduler, or trigger runs via API from your own systems.
+**Q: Can I scrape private repositories?**
+A: No, this Actor only extracts publicly available data from GitLab.
 
-**What format is the output?**
-JSON by default, with one-click export to CSV or Excel. You can also push results directly to Google Sheets, webhooks, or any HTTP endpoint via Apify integrations.
+**Q: What happens if GitLab API is down?**
+A: The Actor has built-in retry logic (3 attempts) and will gracefully handle temporary API failures.
 
-**Do I need any API keys?**
-No. The actor handles all authentication and access internally. Just configure your search parameters and run.
+**Q: Can I extract historical data?**
+A: The Actor extracts current state data. For historical trends, run the Actor periodically and compare results.
 
-**Can I integrate this with my existing tools?**
-Yes. Apify supports integrations with Zapier, Make, Google Sheets, Slack, and direct webhook delivery. You can also use the Apify API to pull results programmatically into any system.
+## Limitations
 
-## Related tools
+- Public projects only (private repos require authentication not supported)
+- GitLab.com only (self-hosted GitLab instances not supported)
+- README extraction requires the project to have a README.md file
+- Merge request counts may be limited by GitLab API pagination
 
-- [Tech Stack Detector — BuiltWith Alternative](https://apify.com/nexgendata/company-tech-stack-detector?fpr=2ayu9b)
-- [Page Speed Analyzer — Lighthouse & Web Vitals](https://apify.com/nexgendata/page-speed-analyzer?fpr=2ayu9b)
-- [StackOverflow Scraper — Q&A & Dev Trends](https://apify.com/nexgendata/stackoverflow-questions?fpr=2ayu9b)
-- [GitHub Repo Stats — Deep Analytics](https://apify.com/nexgendata/github-repo-stats?fpr=2ayu9b)
+## Support
+
+Open an issue on this Actor's Apify page for questions, feature requests, or bug reports.
+
+---
+
+*Built for developers who need reliable GitLab intelligence at scale.*

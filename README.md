@@ -1,147 +1,92 @@
-[Gitlab Scraper](https://apify.com/klondikeking/gitlab-scraper?fpr=data)
+[Gitlab Scraper](https://apify.com/fatihtahta/gitlab-scraper?fpr=data)
 
-Extract comprehensive project, user, and group data from GitLab with enterprise-grade reliability. Perfect for DevOps intelligence, competitive analysis, open source research, and marketplace monitoring.
+## Overview
 
-## What This Actor Does
+**Gitlab Scraper | Fast & Reliable | $2 / 1k** captures structured, public data from [gitlab.com](https://gitlab.com) including projects and user profiles. GitLab hosts millions of repositories, contributors, and discussions, making it a rich source for tracking technologies, communities, and product ecosystems. This actor automates collection with dependable runs so you can focus on analysis instead of manual browsing.
 
-GitLab Scraper extracts detailed metadata from GitLab projects, including stars, forks, issues, merge requests, README content, topics, and contributor information. Unlike basic scrapers, it uses GitLab's official REST API for maximum reliability and data completeness.
+## Why Use This Actor
 
-### Key Features
-
-- **Project Search**: Find projects by keywords across all of GitLab
-- **User Profile Scraping**: Extract all projects from specific users
-- **Group Intelligence**: Scrape complete project listings from groups/organizations
-- **Deep Metadata**: Stars, forks, issues, merge requests, topics, and more
-- **README Extraction**: Optionally fetch README content for analysis
-- **Pagination Support**: Handle large result sets automatically
-- **Rate Limit Resilience**: Built-in retry logic and respectful API usage
-
-## Use Cases
-
-### 1. DevOps Intelligence
-
-Monitor popular container images, CI/CD configurations, and DevOps tooling trends. Track which projects are gaining traction in the developer community and identify emerging technologies before they become mainstream.
-
-### 2. Competitive Analysis
-
-Analyze competitor open source strategies by tracking their GitLab presence. Monitor their most popular projects, development velocity, and community engagement metrics.
-
-### 3. Open Source Research
-
-Academic researchers and analysts can study open source trends, technology adoption patterns, and collaborative development practices across the GitLab ecosystem.
-
-### 4. Talent Sourcing
-
-Identify active developers and high-quality projects for recruitment purposes. Filter by programming language, activity level, and community engagement.
-
-### 5. Marketplace Monitoring
-
-Track plugin and extension ecosystems hosted on GitLab. Monitor version updates, community feedback, and adoption metrics.
+- **Market and competitive research:** Map projects, contributors, and activity around specific technologies or vendors.
+- **Lead and outreach lists:** Identify active maintainers, organizations, and repositories relevant to your campaigns.
+- **Product and trend monitoring:** Follow repositories by language, license, or topics to spot momentum and adoption patterns.
+- **Directory building:** Assemble curated lists of projects or profiles with consistent metadata for enrichment or audits.
+- **Time savings and reliability:** Schedule recurring runs and keep datasets fresh without manual exports or copy-paste work.
 
 ## Input Parameters
 
-| Parameter | Type | Required | Description |
+| Parameter | Type | Description | Default |
 | --- | --- | --- | --- |
-| `searchQueries` | string[] | No | Search terms to find projects (e.g., "machine learning", "react") |
-| `projectPaths` | string[] | No | Specific project paths like "gitlab-org/gitlab" |
-| `userNames` | string[] | No | GitLab usernames to extract projects from |
-| `groupPaths` | string[] | No | GitLab groups to extract all projects from |
-| `maxResults` | integer | Yes | Maximum projects to extract (1-1000) |
-| `includeDetails` | boolean | No | Fetch README content and merge request counts |
-| `proxyConfiguration` | object | No | Proxy settings (uses Apify Proxy by default) |
+| `searchQueries` | array of strings | Keywords to search on GitLab. Each entry runs separately. | — |
+| `searchUrls` | array of strings | Full GitLab search URLs (e.g., `https://gitlab.com/search?scope=projects&search=vscode`). The actor extracts the search term and scope automatically. | — |
+| `searchMode` | string (`projects` | `users` | `projects_and_users`) | Choose which GitLab entities to fetch for each query. Select projects only, users only, or let the actor honor scopes from search URLs. | — |
+| `projectLanguage` | string | Optional language filter for project searches (e.g., `typescript`). | — |
+| `projectArchived` | boolean | Include archived repositories when enabled. | — |
+| `projectMinStars` | integer | Minimum star count to include a project. | — |
+| `projectMinForks` | integer | Minimum fork count to include a project. | — |
+| `projectLicense` | string | License filter for projects (e.g., `apache-2.0`). | — |
+| `projectTopics` | array of strings | Topics to require on projects (e.g., `security`, `cli`). | — |
+| `projectOwner` | string | Owner namespace to target (e.g., `gitlab-org`). | — |
+| `projectFilterTokens` | string | Additional GitLab search tokens to append to project queries (e.g., `stars:>50 archived:false`). | — |
+| `maxResults` | integer | Maximum combined project and user records to save across all queries. | `50000` |
 
-### Example Input
+## Example Input
 
 ```
 {
-  "searchQueries": ["machine learning", "docker"],
-  "userNames": ["gitlab-org"],
-  "maxResults": 50,
-  "includeDetails": true
+  "searchQueries": ["machine learning", "security research"],
+  "searchMode": "projects_and_users",
+  "projectLanguage": "typescript",
+  "projectMinStars": 50,
+  "projectLicense": "apache-2.0",
+  "maxResults": 5000
 }
 ```
 
-## Output Schema
+## Example Output
 
-Each extracted project includes:
+Each dataset item is structured for straightforward analysis or enrichment.
 
 ```
 {
-  "id": 12345,
-  "name": "example-project",
-  "path": "example-project",
-  "pathWithNamespace": "user/example-project",
-  "description": "A sample project description",
-  "webUrl": "https://gitlab.com/user/example-project",
-  "starsCount": 150,
-  "forksCount": 45,
-  "openIssuesCount": 12,
-  "mergeRequestsCount": 3,
-  "defaultBranch": "main",
+  "type": "project",
+  "name": "heritage_site_HackJaipur_hackathon",
+  "nameWithNamespace": "Manjot Singh / heritage_site_HackJaipur_hackathon",
+  "pathWithNamespace": "manjotsinghbagha/heritage_site_HackJaipur_hackathon",
+  "webUrl": "https://gitlab.com/manjotsinghbagha/heritage_site_HackJaipur_hackathon",
+  "description": "Hack-Jaipur hackathon project to build and e commerce site with the help Autho, Machine learning, 3D models,  Django, Python, Html, CSS, javascript",
+  "avatarUrl": null,
+  "topics": [],
+  "starCount": 0,
+  "forksCount": 0,
   "visibility": "public",
-  "archived": false,
-  "createdAt": "2023-01-15T10:30:00Z",
-  "lastActivityAt": "2024-01-20T14:22:00Z",
-  "language": "Python",
-  "topics": ["machine-learning", "data-science"],
-  "tagList": ["v1.0", "stable"],
-  "readmeContent": "# Example Project\\n\\nThis is the README...",
-  "owner": {
-    "id": 67890,
-    "username": "user",
-    "name": "User Name",
-    "webUrl": "https://gitlab.com/user"
-  },
-  "containerRegistryEnabled": true,
-  "issuesEnabled": true,
-  "mergeRequestsEnabled": true,
-  "wikiEnabled": true
+  "archived": null,
+  "createdAt": "2025-12-18T19:18:04.039Z",
+  "lastActivityAt": "2025-12-18T19:18:03.925Z",
+  "namespace": {
+    "name": "Manjot Singh",
+    "fullPath": "manjotsinghbagha"
+  }
 }
 ```
 
-## Pricing
+- `type` — Indicates whether the item is a project or user entry.
+- `name`, `nameWithNamespace`, `pathWithNamespace` — Project identifiers and paths for linking and indexing.
+- `webUrl` — Direct link to the project page.
+- `description`, `topics`, `visibility`, `archived` — High-level project details and status.
+- `starCount`, `forksCount` — Popularity and community engagement signals.
+- `createdAt`, `lastActivityAt` — Timestamps for project creation and latest activity.
+- `namespace` — Owner or organization information.
 
-This Actor uses **Pay Per Event** pricing:
+## Notes & Limitations
 
-- **$0.001 per project extracted**
-
-Example costs:
-
-- 100 projects = $0.10
-- 1,000 projects = $1.00
-- 10,000 projects = $10.00
-
-No monthly fees, no minimums. Pay only for what you use.
-
-## Rate Limits & Performance
-
-- GitLab API rate limits: 10 requests/second for unauthenticated requests
-- This Actor respects rate limits with automatic backoff
-- Average extraction speed: ~30-60 projects/minute with details enabled
-- Recommended maxResults: 50-100 for initial testing
-
-## FAQ
-
-**Q: Can I scrape private repositories?**
-A: No, this Actor only extracts publicly available data from GitLab.
-
-**Q: What happens if GitLab API is down?**
-A: The Actor has built-in retry logic (3 attempts) and will gracefully handle temporary API failures.
-
-**Q: Can I extract historical data?**
-A: The Actor extracts current state data. For historical trends, run the Actor periodically and compare results.
-
-## Limitations
-
-- Public projects only (private repos require authentication not supported)
-- GitLab.com only (self-hosted GitLab instances not supported)
-- README extraction requires the project to have a README.md file
-- Merge request counts may be limited by GitLab API pagination
+- Use this actor responsibly and in accordance with GitLab’s terms of service and applicable laws.
+- Public data can include personal information; ensure you have a lawful basis to store or process it.
+- Start with modest result limits when exploring new filters, then scale once you confirm the scope.
 
 ## Support
 
-Open an issue on this Actor's Apify page for questions, feature requests, or bug reports.
+Questions or custom needs? Open an issue on the **Issues** tab of the actor page in Apify Console and it will be resolved around the clock.
 
----
+Happy Scraping,
 
-*Built for developers who need reliable GitLab intelligence at scale.*
+- Fatih
